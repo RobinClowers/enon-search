@@ -38,6 +38,8 @@ class Processor
 
   def walk_directory
     Find.find(@source_dir) do |path|
+      return if @files.length > 100_000
+
       name = File.basename(path)
       if name[0] == '.'
         Find.prune
@@ -51,8 +53,9 @@ class Processor
     @words.sort.each_with_index do |word, i|
       puts "#{@words.length - i} remaining" if i % 1_000_000 == 0
       word.downcase!
-      @buckets[word[0]] ||= []
-      @buckets[word[0]] << word
+      prefix = word[0..1]
+      @buckets[prefix] ||= []
+      @buckets[prefix] << word
     end
   end
 
