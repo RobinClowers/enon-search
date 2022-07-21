@@ -14,12 +14,14 @@ class Processor
   end
 
   def process
-    # files = walk_directory
-    files = ['./source_data/allen-p/_sent_mail/1.', './source_data/allen-p/_sent_mail/10.',
-             './source_data/allen-p/_sent_mail/100.', './source_data/allen-p/_sent_mail/1000.', './source_data/allen-p/_sent_mail/1001.', './source_data/allen-p/_sent_mail/1002.', './source_data/allen-p/_sent_mail/1003.', './source_data/allen-p/_sent_mail/1004.', './source_data/allen-p/_sent_mail/101.', './source_data/allen-p/_sent_mail/102.']
+    files = walk_directory
     files.each do |path|
-      lines = File.readlines(path)
-      get_words(lines)
+      contents = IO.read(path).force_encoding('ISO-8859-1').encode('utf-8', replace: '?')
+      @words.concat(contents.split.flatten)
+    rescue StandardError => e
+      p e
+      puts path
+      exit(1)
     end
     bucket_words
     write_buckets
@@ -36,10 +38,6 @@ class Processor
       end
     end
     file_names
-  end
-
-  def get_words(lines)
-    @words.concat(lines.map(&:split).flatten)
   end
 
   def bucket_words
