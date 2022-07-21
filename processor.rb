@@ -38,8 +38,6 @@ class Processor
 
   def walk_directory
     Find.find(@source_dir) do |path|
-      return if @files.length > 100_000
-
       name = File.basename(path)
       if name[0] == '.'
         Find.prune
