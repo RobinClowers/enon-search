@@ -1,6 +1,8 @@
 require 'find'
 require 'fileutils'
 
+AllowChars = /[^0-9A-Za-z\s]/
+
 class Processor
   def self.process(source_dir, target_dir)
     new(source_dir, target_dir).process
@@ -9,39 +11,45 @@ class Processor
   def initialize(source_dir, target_dir)
     @source_dir = source_dir
     @target_dir = target_dir
+    @files = []
     @words = []
     @buckets = {}
   end
 
   def process
-    files = walk_directory
-    files.each do |path|
+    puts 'Walking source directory'
+    walk_directory
+    puts "Discovered #{@files.length} files"
+    @files.each_with_index do |path, i|
+      # puts i % 10
+      puts("#{@files.length - i} files remaining") if i % 10_000 == 0
       contents = IO.read(path).force_encoding('ISO-8859-1').encode('utf-8', replace: '?')
-      @words.concat(contents.split.flatten)
+      @words.concat(contents.gsub(AllowChars, '').split.flatten)
     rescue StandardError => e
       p e
       puts path
       exit(1)
     end
+    puts "Bucketing #{@words.length} words"
     bucket_words
+    puts "Writing #{@buckets.length} buckets"
     write_buckets
   end
 
   def walk_directory
-    file_names = []
     Find.find(@source_dir) do |path|
       name = File.basename(path)
       if name[0] == '.'
         Find.prune
       elsif File.file?(path)
-        file_names << path
+        @files << path
       end
     end
-    file_names
   end
 
   def bucket_words
-    @words.sort.each do |word|
+    @words.sort.each_with_index do |word, i|
+      puts "#{@words.length - i} remaining" if i % 1_000_000 == 0
       word.downcase!
       @buckets[word[0]] ||= []
       @buckets[word[0]] << word
