@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'benchmark'
+require './constants'
 
 class Search
   def initialize(data_path)
@@ -12,3 +13,5 @@ class Search
     words.select { |word| word.start_with?(term) }
   end
 end
+
+puts Search.new(ProcessedDataDir).search('illegal')

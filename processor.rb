@@ -1,16 +1,18 @@
 require 'find'
 require 'fileutils'
+require './constants'
 
 AllowChars = /[^0-9A-Za-z\s]/
 
 class Processor
-  def self.process(source_dir, target_dir)
-    new(source_dir, target_dir).process
+  def self.process(source_dir, target_dir, max_files: :infinity)
+    new(source_dir, target_dir, max_files: max_files).process
   end
 
-  def initialize(source_dir, target_dir)
+  def initialize(source_dir, target_dir, max_files:)
     @source_dir = source_dir
     @target_dir = target_dir
+    @max_files = max_files
     @files = []
     @words = []
     @buckets = {}
@@ -38,6 +40,8 @@ class Processor
 
   def walk_directory
     Find.find(@source_dir) do |path|
+      return if @max_files != :infinity && @files.length > @max_files
+
       name = File.basename(path)
       if name[0] == '.'
         Find.prune
@@ -66,4 +70,4 @@ class Processor
   end
 end
 
-Processor.process('./source_data', './processed_data')
+Processor.process('./source_data', ProcessedDataDir, max_files: 100)
