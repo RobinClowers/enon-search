@@ -13,7 +13,9 @@ require './constants'
 class Index
   def initialize(path)
     @path = path
-    FileUtils.mkdir_p(path)
+  end
+
+  def create_index
     FileUtils.mkdir_p(objects_base_path)
     FileUtils.mkdir_p(words_base_path)
   end
