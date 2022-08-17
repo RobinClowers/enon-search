@@ -1,41 +1,46 @@
 require 'find'
 require 'fileutils'
 require './constants'
+require './index'
 
 AllowChars = /[^0-9A-Za-z\s]/
 
 class Processor
-  def self.process(source_dir, target_dir, max_files: :infinity)
-    new(source_dir, target_dir, max_files: max_files).process
+  def self.process(source_dir, max_files: :infinity)
+    new(source_dir, max_files: max_files).process
   end
 
-  def initialize(source_dir, target_dir, max_files:)
+  def initialize(source_dir, max_files:)
     @source_dir = source_dir
-    @target_dir = target_dir
     @max_files = max_files
     @files = []
-    @words = []
+    @file_words = {}
     @buckets = {}
   end
 
   def process
+    FileUtils.rm_rf(ProcessedDataPath)
+    @index = Index.new(ProcessedDataPath)
     puts 'Walking source directory'
     walk_directory
     puts "Discovered #{@files.length} files"
     @files.each_with_index do |path, i|
-      # puts i % 10
-      puts("#{@files.length - i} files remaining") if i % 10_000 == 0
-      contents = IO.read(path).force_encoding('ISO-8859-1').encode('utf-8', replace: '?')
-      @words.concat(contents.gsub(AllowChars, '').split.flatten)
+      process_file(path, i)
     rescue StandardError => e
-      p e
+      puts e
+      puts e.backtrace
       puts path
       exit(1)
     end
-    puts "Bucketing #{@words.length} words"
-    bucket_words
-    puts "Writing #{@buckets.length} buckets"
-    write_buckets
+    puts "indexing #{@file_words.length} files"
+    @index.write(@file_words)
+  end
+
+  def process_file(path, index)
+    puts("#{@files.length - index} files remaining") if index % 10_000 == 0
+    contents = IO.read(path).force_encoding('ISO-8859-1').encode('utf-8', replace: '?')
+    @file_words[contents.hash.to_s] = contents.gsub(AllowChars, '').split.flatten
+    File.write(File.join(ObjectsPath, contents.hash.to_s), contents)
   end
 
   def walk_directory
@@ -50,24 +55,6 @@ class Processor
       end
     end
   end
-
-  def bucket_words
-    @words.sort.each_with_index do |word, i|
-      puts "#{@words.length - i} remaining" if i % 1_000_000 == 0
-      word.downcase!
-      prefix = word[0..1]
-      @buckets[prefix] ||= []
-      @buckets[prefix] << word
-    end
-  end
-
-  def write_buckets
-    FileUtils.rm_rf(@target_dir)
-    FileUtils.mkdir_p(@target_dir)
-    @buckets.each do |letter, words|
-      File.write(File.join(@target_dir, letter), words.join("\n"))
-    end
-  end
 end
 
-Processor.process('./source_data', ProcessedDataDir, max_files: 100)
+Processor.process('./source_data', max_files: 100)
