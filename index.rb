@@ -63,15 +63,16 @@ class Index
   end
 
   def write_words
+    # @start_time = Time.now
     puts "appending to #{@appended_words.length} prefixes"
     @appended_words.each do |prefix, words|
-      # puts "writing #{words.uniq.length} words to prefix #{prefix}"
       file = File.new(prefix_path(prefix), 'a')
       file.write(words.uniq.join)
+      # puts "#{words.uniq.length} words complete in #{Time.now - @start_time}s"
     ensure
-      file.close
+      file&.close
     end
-    appended_words = {}
+    @appended_words = {}
   end
 
   def append_word_hash(word, hash)
@@ -81,14 +82,15 @@ class Index
 
   def write_hashes
     puts "appending to #{@appended_hashes.length} words"
+    # @start_time = Time.now
     @appended_hashes.each do |word, hashes|
-      # puts "writing #{hashes.uniq.length} words to word #{word}"
       file = File.new(word_path(word), 'a')
       file.write(hashes.uniq.join)
+      # puts "#{hashes.uniq.length} hashes complete in #{Time.now - @start_time}s"
     ensure
-      file.close
+      file&.close
     end
-    appended_hashes = {}
+    @appended_hashes = {}
   end
 
   def prefix_path(prefix)
