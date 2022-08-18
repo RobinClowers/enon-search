@@ -81,4 +81,4 @@ class Processor
   end
 end
 
-Processor.process('./source_data', max_files: 100)
+Processor.process('./source_data', max_files: ENV.fetch('MAX_FILES', 100).to_i)
