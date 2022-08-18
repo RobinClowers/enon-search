@@ -53,11 +53,11 @@ class Index
   end
 
   def append_word(prefix, word)
-    File.write(prefix_path(prefix), "#{word}\n", File.size?(prefix_path(prefix)) || 0)
+    File.new(prefix_path(prefix), 'a').write("#{word}\n")
   end
 
   def append_word_hash(word, hash)
-    File.write(word_path(word), "#{hash}\n", File.size?(word_path(word)))
+    File.new(word_path(word), 'a').write("#{hash}\n")
   end
 
   def prefix_path(prefix)
