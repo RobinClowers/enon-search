@@ -10,7 +10,7 @@ describe Index do
     let(:prefix) { 'ar' }
     let(:word) { 'are' }
     let(:prefix_path) { File.join(indicies_path, prefix) }
-    let(:word_path) { File.join(indicies_path, "words", word) }
+    let(:word_path) { File.join(indicies_path, word) }
     let(:file_words) do
       { 123 => [word] }
     end
@@ -19,7 +19,7 @@ describe Index do
       FileUtils.rm_rf(test_path)
       FileUtils.mkdir_p(test_path)
       FileUtils.mkdir_p(indicies_path)
-      FileUtils.mkdir_p(File.join(indicies_path, "words"))
+      FileUtils.mkdir_p(File.join(test_path, "words"))
     end
 
     it 'writes a new prefix file if needed' do
