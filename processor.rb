@@ -4,7 +4,7 @@ require './constants'
 require './index'
 
 AllowChars = /[^0-9A-Za-z\s]/
-ChunkSize = 1000
+ChunkSize = ENV.fetch('CHUNK_SIZE', 100).to_i
 
 class Processor
   def self.process(source_dir, max_files: :infinity)
