@@ -4,6 +4,7 @@ require './constants'
 require './index'
 
 AllowChars = /[^0-9A-Za-z\s]/
+ChunkSize = 1000
 
 class Processor
   def self.process(source_dir, max_files: :infinity)
@@ -14,9 +15,9 @@ class Processor
     @source_dir = source_dir
     @max_files = max_files
     @index = Index.new(ProcessedDataPath)
+    @total_file_count = 0
     @files = []
     @file_words = {}
-    @buckets = {}
   end
 
   def process
@@ -26,20 +27,41 @@ class Processor
     puts 'Walking source directory'
     walk_directory
     puts "Discovered #{@files.length} files"
-    @files.each_slice(1000) do |chunk|
+    @start_time = Time.now
+    slice = 1
+    @files.each_slice(ChunkSize) do |chunk|
       puts "Processing #{chunk.length} files"
-      chunk.each_with_index do |path, i|
-        process_file(path, i)
+      chunk.each do |path|
+        process_file(path)
+      rescue StandardError => e
+        puts "failed on #{path}"
+        raise e
       end
-      puts "indexing #{@file_words.length} files"
+      puts "Indexing #{chunk.length} files"
       @index.write(@file_words)
       @file_words = {}
+      puts "Chunk #{slice} complete in #{Time.now - @start_time}s"
+      puts("#{remaining_files(slice)} files remaining")
+      slice += 1
     end
     puts 'Done'
+  rescue StandardError => e
+    puts e.class
+    puts e.to_s[0..100]
+    puts e.backtrace
   end
 
-  def process_file(path, index)
-    puts("#{@files.length - index} files remaining") if index % 10_000 == 0
+  private
+
+  def remaining_files(slice)
+    if ChunkSize > @files.length
+      @files.length
+    else
+      @files.length - slice * ChunkSize
+    end
+  end
+
+  def process_file(path)
     contents = IO.read(path).force_encoding('ISO-8859-1').encode('utf-8', replace: '?')
     @file_words[contents.hash.to_s] = contents.gsub(AllowChars, '').split.flatten
     File.write(File.join(ObjectsPath, contents.hash.to_s), contents)
@@ -47,7 +69,7 @@ class Processor
 
   def walk_directory
     Find.find(@source_dir) do |path|
-      return if @max_files != :infinity && @files.length > @max_files
+      return if @max_files != :infinity && @files.length >= @max_files
 
       name = File.basename(path)
       if name[0] == '.'
