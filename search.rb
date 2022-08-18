@@ -14,6 +14,7 @@ class Search
   end
 end
 
-result = Search.new(ProcessedDataPath).search('are')
-puts result
-puts "\nReturned #{result.count} documents"
+term = ENV.fetch('QUERY_TERM', 'test').downcase
+result = Search.new(ProcessedDataPath).search(term)
+puts result.first unless result.empty?
+puts "\nSearch term `#{term}` returned #{result.count} documents"

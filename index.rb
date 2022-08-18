@@ -39,7 +39,6 @@ class Index
   end
 
   def search(term)
-    term.downcase!
     prefix = term[0..1]
     path = prefix_path(prefix)
     raise 'Term not found' unless File.exist?(path)
