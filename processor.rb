@@ -20,19 +20,22 @@ class Processor
   end
 
   def process
+    puts 'Removing data directory'
     FileUtils.rm_rf(ProcessedDataPath)
     @index.create_index
     puts 'Walking source directory'
     walk_directory
     puts "Discovered #{@files.length} files"
-    @files.each_with_index do |path, i|
-      process_file(path, i)
-    rescue StandardError => e
-      puts "failed on #{path}"
-      raise e
+    @files.each_slice(1000) do |chunk|
+      puts "Processing #{chunk.length} files"
+      chunk.each_with_index do |path, i|
+        process_file(path, i)
+      end
+      puts "indexing #{@file_words.length} files"
+      @index.write(@file_words)
+      @file_words = {}
     end
-    puts "indexing #{@file_words.length} files"
-    @index.write(@file_words)
+    puts 'Done'
   end
 
   def process_file(path, index)
