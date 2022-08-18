@@ -22,25 +22,33 @@ class Processor
 
   def process
     puts 'Removing data directory'
+    start_time = Time.now
     FileUtils.rm_rf(ProcessedDataPath)
+    puts "  done in #{Time.now - start_time}s"
     @index.create_index
     puts 'Walking source directory'
+    start_time = Time.now
     walk_directory
-    puts "Discovered #{@files.length} files"
-    @start_time = Time.now
+    puts "  done in #{Time.now - start_time}s"
+    puts "  discovered #{@files.length} files"
+    start_time = Time.now
     slice = 1
     @files.each_slice(ChunkSize) do |chunk|
       puts "Processing #{chunk.length} files"
+      start_time = Time.now
       chunk.each do |path|
         process_file(path)
       rescue StandardError => e
         puts "failed on #{path}"
         raise e
       end
+      puts "  done in #{Time.now - start_time}s"
       puts "Indexing #{chunk.length} files"
+      start_time = Time.now
       @index.write(@file_words)
+      puts "  done in #{Time.now - start_time}s"
       @file_words = {}
-      puts "Chunk #{slice} complete in #{Time.now - @start_time}s"
+      puts "Chunk #{slice} complete in #{Time.now - start_time}s"
       puts("#{remaining_files(slice)} files remaining")
       slice += 1
     end
