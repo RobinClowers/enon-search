@@ -13,6 +13,8 @@ require './constants'
 class Index
   def initialize(path)
     @path = path
+    @appended_words = {}
+    @appended_hashes = {}
   end
 
   def create_index
@@ -28,6 +30,8 @@ class Index
         append_word(word[0..1], word)
         append_word_hash(word, hash)
       end
+      write_words
+      write_hashes
     end
   end
 
@@ -53,11 +57,29 @@ class Index
   end
 
   def append_word(prefix, word)
-    File.new(prefix_path(prefix), 'a').write("#{word}\n")
+    @appended_words[prefix] ||= []
+    @appended_words[prefix] << "#{word}\n"
+  end
+
+  def write_words
+    puts "appending to #{@appended_words.length} prefixes"
+    @appended_words.each do |prefix, words|
+      puts "writing #{words.uniq.length} words to prefix #{prefix}"
+      File.new(prefix_path(prefix), 'a').write(words.uniq)
+    end
+    appended_words = {}
   end
 
   def append_word_hash(word, hash)
-    File.new(word_path(word), 'a').write("#{hash}\n")
+    @appended_words[word] ||= []
+    @appended_words[word] << "#{hash}\n"
+  end
+
+  def write_hashes
+    @appended_hashes.each do |word, hashes|
+      File.new(word_path(word), 'a').write(hashes.uniq)
+    end
+    appended_hashes = {}
   end
 
   def prefix_path(prefix)
