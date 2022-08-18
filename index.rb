@@ -66,7 +66,10 @@ class Index
     puts "appending to #{@appended_words.length} prefixes"
     @appended_words.each do |prefix, words|
       # puts "writing #{words.uniq.length} words to prefix #{prefix}"
-      File.new(prefix_path(prefix), 'a').write(words.uniq.join)
+      file = File.new(prefix_path(prefix), 'a')
+      file.write(words.uniq.join)
+    ensure
+      file.close
     end
     appended_words = {}
   end
@@ -80,7 +83,10 @@ class Index
     puts "appending to #{@appended_hashes.length} words"
     @appended_hashes.each do |word, hashes|
       # puts "writing #{hashes.uniq.length} words to word #{word}"
-      File.new(word_path(word), 'a').write(hashes.uniq.join)
+      file = File.new(word_path(word), 'a')
+      file.write(hashes.uniq.join)
+    ensure
+      file.close
     end
     appended_hashes = {}
   end
