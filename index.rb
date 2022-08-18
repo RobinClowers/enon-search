@@ -25,17 +25,10 @@ class Index
       hash, words = entry
       words.sort.each do |word|
         word.downcase!
-        write_prefix(word[0..1], word)
+        append_word(word[0..1], word)
         append_word_hash(word, hash)
       end
     end
-  end
-
-  def write_prefix(prefix, word)
-    lines = []
-    words = prefix_lines(prefix)
-    index = words.find { |w| w == word }
-    append_word(prefix, word)
   end
 
   def search(term)
