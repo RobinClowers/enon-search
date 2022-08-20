@@ -3,8 +3,18 @@ require_relative '../index'
 
 describe Index do
   subject(:index) { Index.new(test_path) }
+  let!(:orig_path) { IndexFile.base_path }
   let(:test_path) { File.join('./processed_data_test') }
   let(:indicies_path) { File.join(test_path, 'indicies') }
+
+
+  before do
+    IndexFile.base_path = test_path
+  end
+
+  after do
+    IndexFile.base_path = orig_path
+  end
 
   describe '#write' do
     let(:prefix) { 'ar' }

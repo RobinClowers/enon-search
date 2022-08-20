@@ -1,5 +1,4 @@
 require 'fileutils'
-require './constants'
 require './index_file'
 
 # Fragment index file names are a prefix of a word
@@ -12,7 +11,7 @@ require './index_file'
 # by opening the word file based on the fragment index,
 # we can get all the hashes that contain the word
 class Index
-  def initialize(path)
+  def initialize(path = IndexFile.base_path)
     @path = path
     @appended_words = {}
     @appended_hashes = {}

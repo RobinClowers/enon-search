@@ -1,9 +1,13 @@
 require 'fileutils'
 
 module IndexFile
-  attr_accessor :base_path
+  def self.base_path
+    @base_path ||= ENV.fetch('PROCESSED_DATA_PATH', './processed_data')
+  end
 
-  @base_path = ENV.fetch('PROCESSED_DATA_PATH', './processed_data')
+  def self.base_path=(path)
+    @base_path = path
+  end
 
   def self.write_words(appended_words)
     # start_time = Time.now
@@ -29,7 +33,7 @@ module IndexFile
     end
   end
 
-  def indicies_path
+  def self.indicies_path
     File.join(@base_path, 'indicies')
   end
 

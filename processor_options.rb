@@ -1,6 +1,16 @@
 require 'optparse'
 
 ProcessorOptions = Struct.new(:verbose, :max_files, :chunk_size, :path, :output_path) do
+  def initialize(args = {})
+    super(args)
+    # Seems like the args[sym] part should be automatic?
+    self.verbose = args[:verbose] || false
+    self.path = args[:path] || ENV.fetch('SOURCE_PATH', './source_data')
+    self.output_path = args[:output_path] || ENV.fetch('PROCESSED_DATA_PATH', './processed_data')
+    self.max_files = args[:max_files] || ENV.fetch('MAX_FILES', 10_00).to_i
+    self.chunk_size = args[:chunk_size] || ENV.fetch('CHUNK_SIZE', 100).to_i
+  end
+
   def self.parse!(args)
     options = ProcessorOptions.new
     OptionParser.new(args) do |opts|
@@ -32,10 +42,6 @@ ProcessorOptions = Struct.new(:verbose, :max_files, :chunk_size, :path, :output_
       end
     end.parse!
 
-    options.path ||= ENV.fetch('SOURCE_PATH', './source_data')
-    options.output_path ||= ENV.fetch('PROCESSED_DATA_PATH', './processed_data')
-    options.max_files ||= ENV.fetch('MAX_FILES', 10_00).to_i
-    options.chunk_size ||= ENV.fetch('CHUNK_SIZE', 100).to_i
     options
   end
 end

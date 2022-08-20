@@ -1,5 +1,4 @@
 require 'find'
-require './constants'
 require './index'
 require './processor_options'
 
@@ -24,9 +23,9 @@ class Processor
   def process
     puts 'Removing data directory'
     start_time = Time.now
-    IndexFile.delete_index
+    Index.delete_index
     puts "  done in #{Time.now - start_time}s"
-    @index.create_index
+    Index.create_index
     puts 'Walking source directory'
     start_time = Time.now
     walk_directory

@@ -1,9 +1,9 @@
 require_relative '../processor'
-require_relative '../constants'
 require_relative '../index_file'
 
 describe Processor do
-  subject(:processor) { Processor.new('./spec/fixtures/source_data', max_files: 1) }
+  subject(:processor) { Processor.new(options) }
+  let(:options) { ProcessorOptions.new(path: './spec/fixtures/source_data', max_files: 1) }
 
   describe '#process' do
     let(:prefix) { 'ou' }
