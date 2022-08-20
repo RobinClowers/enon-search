@@ -1,0 +1,15 @@
+#! /usr/bin/env ruby
+
+require_relative '../processor_options'
+require_relative '../processor'
+
+def process
+  options = ProcessorOptions.parse!(ARGV)
+  Processor.new(options).process
+rescue StandardError => e
+  puts e.class
+  puts e.to_s[0..100]
+  puts e.backtrace
+end
+
+process

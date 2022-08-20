@@ -2,18 +2,20 @@ require 'find'
 require 'fileutils'
 require './constants'
 require './index'
+require './processor_options'
 
 AllowChars = /[^0-9A-Za-z\s]/
 ChunkSize = ENV.fetch('CHUNK_SIZE', 100).to_i
 
 class Processor
   def self.process(source_dir, max_files: :infinity)
-    new(source_dir, max_files: max_files).process
+    new(ProcessorOptions.new(path: source_dir, max_files: max_files)).process
   end
 
-  def initialize(source_dir, max_files:)
-    @source_dir = source_dir
-    @max_files = max_files
+  def initialize(options)
+    @source_dir = options.path
+    @max_files = options.max_files
+    @verbose = options.verbose
     @index = Index.new
     @total_file_count = 0
     @files = []
@@ -53,10 +55,6 @@ class Processor
       slice += 1
     end
     puts 'Done'
-  rescue StandardError => e
-    puts e.class
-    puts e.to_s[0..100]
-    puts e.backtrace
   end
 
   private
@@ -88,5 +86,3 @@ class Processor
     end
   end
 end
-
-Processor.process('./source_data', max_files: ENV.fetch('MAX_FILES', 100).to_i)
