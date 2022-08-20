@@ -11,7 +11,7 @@ require './constants'
 # by opening the word file based on the fragment index,
 # we can get all the hashes that contain the word
 class Index
-  def initialize(path)
+  def initialize(path = ProcessedDataPath)
     @path = path
     @appended_words = {}
     @appended_hashes = {}

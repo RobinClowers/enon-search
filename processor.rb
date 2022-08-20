@@ -14,7 +14,7 @@ class Processor
   def initialize(source_dir, max_files:)
     @source_dir = source_dir
     @max_files = max_files
-    @index = Index.new(ProcessedDataPath)
+    @index = Index.new
     @total_file_count = 0
     @files = []
     @file_words = {}

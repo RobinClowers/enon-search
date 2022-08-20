@@ -6,7 +6,7 @@ require './constants'
 class Search
   def self.search
     term = ENV.fetch('QUERY_TERM', 'test').downcase
-    result = Search.new(ProcessedDataPath).search(term)
+    result = Search.new.search(term)
 
     unless result.empty?
       puts result.first.match(/^From:.*$/i)
@@ -20,7 +20,7 @@ class Search
     puts "Search term `#{term}` returned #{result.count} documents"
   end
 
-  def initialize(data_path)
+  def initialize(data_path = ProcessedDataPath)
     @data_path = data_path
     @index = Index.new(data_path)
   end
