@@ -1,4 +1,5 @@
 require 'find'
+require './app_logger'
 require './index'
 require './processor_options'
 
@@ -21,38 +22,38 @@ class Processor
   end
 
   def process
-    puts 'Removing data directory'
+    AppLogger.warn 'Removing data directory'
     start_time = Time.now
     Index.delete_index
-    puts "  done in #{Time.now - start_time}s"
+    AppLogger.info "  done in #{Time.now - start_time}s"
     Index.create_index
-    puts 'Walking source directory'
+    AppLogger.info 'Walking source directory'
     start_time = Time.now
     walk_directory
-    puts "  done in #{Time.now - start_time}s"
-    puts "  discovered #{@files.length} files"
+    AppLogger.info "  done in #{Time.now - start_time}s"
+    AppLogger.info "  discovered #{@files.length} files"
     start_time = Time.now
     slice = 1
     @files.each_slice(ChunkSize) do |chunk|
-      puts "Processing #{chunk.length} files"
+      AppLogger.info "Processing #{chunk.length} files"
       start_time = Time.now
       chunk.each do |path|
         process_file(path)
       rescue StandardError => e
-        puts "failed on #{path}"
+        AppLogger.error "failed on #{path}"
         raise e
       end
-      puts "  done in #{Time.now - start_time}s"
-      puts "Indexing #{chunk.length} files"
+      AppLogger.info "  done in #{Time.now - start_time}s"
+      AppLogger.info "Indexing #{chunk.length} files"
       start_time = Time.now
       @index.write(@file_words)
-      puts "  done in #{Time.now - start_time}s"
+      AppLogger.info "  done in #{Time.now - start_time}s"
       @file_words = {}
-      puts "Chunk #{slice} complete in #{Time.now - start_time}s"
-      puts("#{remaining_files(slice)} files remaining")
+      AppLogger.info "Chunk #{slice} complete in #{Time.now - start_time}s"
+      AppLogger.info("#{remaining_files(slice)} files remaining")
       slice += 1
     end
-    puts 'Done'
+    AppLogger.info 'Done'
   end
 
   private

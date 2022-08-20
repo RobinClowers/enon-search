@@ -5,6 +5,10 @@ describe Processor do
   subject(:processor) { Processor.new(options) }
   let(:options) { ProcessorOptions.new(path: './spec/fixtures/source_data', max_files: 1) }
 
+  before(:all) do
+    AppLogger = Logger.new(nil)
+  end
+
   describe '#process' do
     let(:prefix) { 'ou' }
     let(:word) { 'our' }

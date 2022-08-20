@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'benchmark'
 require './index'
+require './app_logger'
 
 class Search
   def self.search

@@ -7,6 +7,9 @@ describe Index do
   let(:test_path) { File.join('./processed_data_test') }
   let(:indicies_path) { File.join(test_path, 'indicies') }
 
+  before(:all) do
+    AppLogger = Logger.new(nil)
+  end
 
   before do
     IndexFile.base_path = test_path

@@ -1,5 +1,6 @@
 require 'fileutils'
 require './index_file'
+require './app_logger'
 
 # Fragment index file names are a prefix of a word
 # They contain hashes of objects containing the word separate by newlines
@@ -52,7 +53,7 @@ class Index
     hashes = words.uniq.flat_map do |word|
       IndexFile.word_lines(word)
     end.uniq
-    puts "found #{hashes.length} hashes"
+    AppLogger.info "found #{hashes.length} hashes"
     hashes.map { |hash| IndexFile.object(hash) }
   end
 

@@ -1,14 +1,18 @@
 require 'optparse'
 
-ProcessorOptions = Struct.new(:verbose, :max_files, :chunk_size, :path, :output_path) do
+ProcessorOptions = Struct.new(:verbose, :log_level, :max_files, :chunk_size, :path, :output_path) do
   def initialize(args = {})
     super(args)
     # Seems like the args[sym] part should be automatic?
     self.verbose = args[:verbose] || false
+    self.log_level = verbose ? 'DEBUG' : ENV.fetch('LOG_LEVEL', 'info')
     self.path = args[:path] || ENV.fetch('SOURCE_PATH', './source_data')
     self.output_path = args[:output_path] || ENV.fetch('PROCESSED_DATA_PATH', './processed_data')
     self.max_files = args[:max_files] || ENV.fetch('MAX_FILES', 10_00).to_i
     self.chunk_size = args[:chunk_size] || ENV.fetch('CHUNK_SIZE', 100).to_i
+
+    # seems weird, should probably have a better home
+    AppLogger.level = log_level
   end
 
   def self.parse!(args)
