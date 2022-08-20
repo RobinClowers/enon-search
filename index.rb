@@ -12,16 +12,20 @@ require './index_file'
 # by opening the word file based on the fragment index,
 # we can get all the hashes that contain the word
 class Index
-  def initialize(path = ProcessedDataPath)
+  def initialize(path)
     @path = path
     @appended_words = {}
     @appended_hashes = {}
   end
 
-  def create_index
-    FileUtils.mkdir_p(IndiciesPath)
-    FileUtils.mkdir_p(ObjectsPath)
-    FileUtils.mkdir_p(WordsPath)
+  def self.delete_index
+    FileUtils.rm_rf(IndexFile.base_path)
+  end
+
+  def self.create_index
+    FileUtils.mkdir_p(IndexFile.indicies_path)
+    FileUtils.mkdir_p(IndexFile.objects_path)
+    FileUtils.mkdir_p(IndexFile.words_path)
   end
 
   def write(file_words)

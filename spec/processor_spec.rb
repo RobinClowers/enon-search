@@ -10,9 +10,8 @@ describe Processor do
     let(:word) { 'our' }
 
     before do
-      FileUtils.rm_rf(ProcessedDataPath)
-      FileUtils.mkdir_p(WordsPath)
-      FileUtils.mkdir_p(IndiciesPath)
+      Index.delete_index
+      Index.create_index
     end
 
     it 'creates an prefix index', :focus do

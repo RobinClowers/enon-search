@@ -1,5 +1,4 @@
 require 'find'
-require 'fileutils'
 require './constants'
 require './index'
 require './processor_options'
@@ -25,7 +24,7 @@ class Processor
   def process
     puts 'Removing data directory'
     start_time = Time.now
-    FileUtils.rm_rf(ProcessedDataPath)
+    IndexFile.delete_index
     puts "  done in #{Time.now - start_time}s"
     @index.create_index
     puts 'Walking source directory'
@@ -70,7 +69,7 @@ class Processor
   def process_file(path)
     contents = IO.read(path).force_encoding('ISO-8859-1').encode('utf-8', replace: '?')
     @file_words[contents.hash.to_s] = contents.gsub(AllowChars, '').split.flatten
-    File.write(File.join(ObjectsPath, contents.hash.to_s), contents)
+    File.write(File.join(IndexFile.objects_path, contents.hash.to_s), contents)
   end
 
   def walk_directory

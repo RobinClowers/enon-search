@@ -20,7 +20,7 @@ class Search
     puts "Search term `#{term}` returned #{result.count} documents"
   end
 
-  def initialize(data_path = ProcessedDataPath)
+  def initialize(data_path = IndexFile.base_path)
     @data_path = data_path
     @index = Index.new(data_path)
   end

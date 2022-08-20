@@ -1,7 +1,9 @@
+require 'fileutils'
+
 module IndexFile
-  def self.object_path(hash)
-    File.join(ObjectsPath, hash)
-  end
+  attr_accessor :base_path
+
+  @base_path = ENV.fetch('PROCESSED_DATA_PATH', './processed_data')
 
   def self.write_words(appended_words)
     # start_time = Time.now
@@ -27,20 +29,36 @@ module IndexFile
     end
   end
 
+  def indicies_path
+    File.join(@base_path, 'indicies')
+  end
+
   def self.prefix_path(prefix)
-    File.join(IndiciesPath, prefix)
+    File.join(indicies_path, prefix)
   end
 
   def self.prefix_lines(prefix)
     read_file_lines?(prefix_path(prefix))
   end
 
+  def self.words_path
+    File.join(@base_path, 'words')
+  end
+
   def self.word_path(word)
-    File.join(WordsPath, word[0..20])
+    File.join(words_path, word[0..20])
   end
 
   def self.word_lines(word)
     read_file_lines?(word_path(word))
+  end
+
+  def self.objects_path
+    File.join(@base_path, 'objects')
+  end
+
+  def self.object_path(hash)
+    File.join(objects_path, hash)
   end
 
   def self.object(hash)
