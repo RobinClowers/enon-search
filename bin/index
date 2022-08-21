@@ -1,0 +1,14 @@
+#! /usr/bin/env ruby
+
+require_relative '../indexer'
+
+def index
+  options = IndexerOptions.parse!(ARGV)
+  Indexer.new(options).index
+rescue StandardError => e
+  puts e.class
+  puts e.to_s[0..100]
+  puts e.backtrace
+end
+
+index

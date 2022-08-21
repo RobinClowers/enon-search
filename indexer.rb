@@ -1,14 +1,14 @@
 require 'find'
 require './app_logger'
 require './index'
-require './processor_options'
+require './indexer_options'
 
 AllowChars = /[^0-9A-Za-z\s]/
 ChunkSize = ENV.fetch('CHUNK_SIZE', 100).to_i
 
-class Processor
-  def self.process(source_dir, max_files: :infinity)
-    new(ProcessorOptions.new(path: source_dir, max_files: max_files)).process
+class Indexer
+  def self.index(source_dir, max_files: :infinity)
+    new(IndexerOptions.new(path: source_dir, max_files: max_files)).index
   end
 
   def initialize(options)
@@ -21,7 +21,7 @@ class Processor
     @file_words = {}
   end
 
-  def process
+  def index
     AppLogger.warn 'Removing data directory'
     start_time = Time.now
     Index.delete_index
@@ -35,10 +35,10 @@ class Processor
     start_time = Time.now
     slice = 1
     @files.each_slice(ChunkSize) do |chunk|
-      AppLogger.info "Processing #{chunk.length} files"
+      AppLogger.info "Indexing #{chunk.length} files"
       start_time = Time.now
       chunk.each do |path|
-        process_file(path)
+        index_file(path)
       rescue StandardError => e
         AppLogger.error "failed on #{path}"
         raise e
@@ -66,7 +66,7 @@ class Processor
     end
   end
 
-  def process_file(path)
+  def index_file(path)
     contents = IO.read(path).force_encoding('ISO-8859-1').encode('utf-8', replace: '?')
     @file_words[contents.hash.to_s] = contents.gsub(AllowChars, '').split.flatten
     File.write(File.join(IndexFile.objects_path, contents.hash.to_s), contents)

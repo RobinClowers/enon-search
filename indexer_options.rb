@@ -1,13 +1,13 @@
 require 'optparse'
 
-ProcessorOptions = Struct.new(:verbose, :log_level, :max_files, :chunk_size, :path, :output_path) do
+IndexerOptions = Struct.new(:verbose, :log_level, :max_files, :chunk_size, :path, :output_path) do
   def initialize(args = {})
     super(args)
     # Seems like the args[sym] part should be automatic?
     self.verbose = args[:verbose] || false
     self.log_level = verbose ? 'DEBUG' : ENV.fetch('LOG_LEVEL', 'info')
     self.path = args[:path] || ENV.fetch('SOURCE_PATH', './source_data')
-    self.output_path = args[:output_path] || ENV.fetch('PROCESSED_DATA_PATH', './processed_data')
+    self.output_path = args[:output_path] || ENV.fetch('INDEX_PATH', './index')
     self.max_files = args[:max_files] || ENV.fetch('MAX_FILES', 10_00).to_i
     self.chunk_size = args[:chunk_size] || ENV.fetch('CHUNK_SIZE', 100).to_i
 
@@ -16,7 +16,7 @@ ProcessorOptions = Struct.new(:verbose, :log_level, :max_files, :chunk_size, :pa
   end
 
   def self.parse!(args)
-    options = ProcessorOptions.new
+    options = new
     OptionParser.new(args) do |opts|
       opts.banner = 'Usage: example.rb [options]'
 
@@ -24,7 +24,7 @@ ProcessorOptions = Struct.new(:verbose, :log_level, :max_files, :chunk_size, :pa
         options[:verbose] = v
       end
 
-      opts.on('-m', '--max-files FILES', Numeric, 'Maximum files to process') do |m|
+      opts.on('-m', '--max-files FILES', Numeric, 'Maximum files to index') do |m|
         options[:max_files] = m
       end
 

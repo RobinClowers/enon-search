@@ -2,36 +2,25 @@ require 'fileutils'
 require_relative '../index'
 
 describe Index do
-  subject(:index) { Index.new(test_path) }
-  let!(:orig_path) { IndexFile.base_path }
-  let(:test_path) { File.join('./processed_data_test') }
-  let(:indicies_path) { File.join(test_path, 'indicies') }
+  subject(:index) { Index.new(IndexFile.base_path) }
 
   before(:all) do
     AppLogger = Logger.new(nil)
   end
 
-  before do
-    IndexFile.base_path = test_path
-  end
-
-  after do
-    IndexFile.base_path = orig_path
-  end
-
   describe '#write' do
     let(:prefix) { 'ar' }
     let(:word) { 'are' }
-    let(:prefix_path) { File.join(indicies_path, prefix) }
-    let(:word_path) { File.join(test_path, 'words', word) }
+    let(:prefix_path) { IndexFile.prefix_path(prefix) }
+    let(:word_path) { IndexFile.word_path(word) }
     let(:file_words) do
       { 123 => [word] }
     end
 
     before do
-      FileUtils.rm_rf(test_path)
-      FileUtils.mkdir_p(indicies_path)
-      FileUtils.mkdir_p(File.join(test_path, 'words'))
+      FileUtils.rm_rf(IndexFile.base_path)
+      FileUtils.mkdir_p(IndexFile.indicies_path)
+      FileUtils.mkdir_p(IndexFile.words_path)
     end
 
     it 'writes a new prefix file if needed' do

@@ -3,7 +3,7 @@ require './app_logger'
 
 module IndexFile
   def self.base_path
-    @base_path ||= ENV.fetch('PROCESSED_DATA_PATH', './processed_data')
+    @base_path ||= ENV.fetch('INDEX_PATH', './index')
   end
 
   def self.base_path=(path)
