@@ -10,25 +10,24 @@ module IndexFile
     @base_path = path
   end
 
-  def self.write_words(appended_words)
-    start_time = Time.now
-    AppLogger.info "  appending to #{appended_words.length} prefixes"
-    appended_words.each do |prefix, words|
-      file = File.new(prefix_path(prefix), 'a')
-      file.write(words.uniq.join)
-      AppLogger.debug "#{words.uniq.length} words complete in #{Time.now - start_time}s"
-    ensure
-      file&.close
-    end
+  def self.write_words(objects_hash)
+    write(objects_hash) { |prefix| prefix_path(prefix) }
   end
 
-  def self.write_hashes(hashes)
-    AppLogger.info "  appending to #{hashes.length} words"
+  def self.write_hashes(objects_hash)
+    write(objects_hash) { |word| word_path(word) }
+  end
+
+  # objects_hash - { prefix|word => words[]|hashes[] }
+  def self.write(objects_hash, &block)
+    raise 'block required for path construction' unless block_given?
+
+    AppLogger.info "  appending to #{objects_hash.length} words"
     start_time = Time.now
-    hashes.each do |word, hashes|
-      file = File.new(word_path(word), 'a')
-      file.write(hashes.uniq.join)
-      AppLogger.debug "#{hashes.uniq.length} hashes complete in #{Time.now - start_time}s"
+    objects_hash.each do |word, lines|
+      file = File.new(block.call(word), 'a')
+      file.write(lines.uniq.join)
+      AppLogger.debug "#{lines.uniq.length} lines written in #{Time.now - start_time}s"
     ensure
       file&.close
     end
