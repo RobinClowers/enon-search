@@ -19,7 +19,7 @@ describe Index do
 
     before do
       FileUtils.rm_rf(IndexFile.base_path)
-      FileUtils.mkdir_p(IndexFile.indicies_path)
+      FileUtils.mkdir_p(IndexFile.prefixes_path)
       FileUtils.mkdir_p(IndexFile.words_path)
     end
 

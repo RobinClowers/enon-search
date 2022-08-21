@@ -33,12 +33,12 @@ module IndexFile
     end
   end
 
-  def self.indicies_path
-    File.join(@base_path, 'indicies')
+  def self.prefixes_path
+    File.join(@base_path, 'prefixes')
   end
 
   def self.prefix_path(prefix)
-    File.join(indicies_path, prefix)
+    File.join(prefixes_path, prefix)
   end
 
   def self.prefix_lines(prefix)

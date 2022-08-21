@@ -23,7 +23,7 @@ class Index
   end
 
   def self.create_index
-    FileUtils.mkdir_p(IndexFile.indicies_path)
+    FileUtils.mkdir_p(IndexFile.prefixes_path)
     FileUtils.mkdir_p(IndexFile.objects_path)
     FileUtils.mkdir_p(IndexFile.words_path)
   end
