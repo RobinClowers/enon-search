@@ -25,12 +25,14 @@ class Indexer
     start_time = Time.now
     Index.delete_index
     AppLogger.info "  done in #{Time.now - start_time}s"
+
     Index.create_index
     AppLogger.info 'Walking source directory'
     start_time = Time.now
     walk_directory
     AppLogger.info "  done in #{Time.now - start_time}s"
     AppLogger.info "  discovered #{@files.length} files"
+
     start_time = Time.now
     slice = 1
     @files.each_slice(options.chunk_size) do |chunk|
@@ -44,10 +46,11 @@ class Indexer
       end
       AppLogger.info "  done in #{Time.now - start_time}s"
       AppLogger.info "Indexing #{chunk.length} files"
+
       start_time = Time.now
       @index.write(@file_words)
-      AppLogger.info "  done in #{Time.now - start_time}s"
       @file_words = {}
+      AppLogger.info "  done in #{Time.now - start_time}s"
       AppLogger.info "Chunk #{slice} complete in #{Time.now - start_time}s"
       AppLogger.info("#{remaining_files(slice)} files remaining")
       slice += 1
