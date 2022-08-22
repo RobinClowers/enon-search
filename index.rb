@@ -43,7 +43,7 @@ class Index
     @appended_hashes = {}
   end
 
-  def search(term)
+  def search(term, &block)
     prefix = term[0..1]
     path = IndexFile.prefix_path(prefix)
     raise 'Term not found' unless File.exist?(path)
@@ -53,7 +53,11 @@ class Index
       IndexFile.word_lines(word)
     end.uniq
     AppLogger.info "found #{hashes.length} hashes"
-    hashes.map { |hash| IndexFile.object(hash) }
+    hashes.map do |hash|
+      result = IndexFile.object(hash)
+      block.call(result) if block_given?
+      result
+    end
   end
 
   private
