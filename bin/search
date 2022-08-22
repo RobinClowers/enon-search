@@ -5,7 +5,7 @@ require_relative '../search'
 def search
   raise 'Usage: search TERM' unless ARGV[0]
 
-  puts Search.new.search(ARGV[0])
+  Search.new.search(ARGV[0])
 rescue StandardError => e
   puts e.class
   puts e.to_s[0..100]

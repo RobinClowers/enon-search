@@ -2,7 +2,7 @@ require 'fileutils'
 require_relative '../index'
 
 describe Index do
-  subject(:index) { Index.new(IndexFile.base_path) }
+  subject(:index) { Index.new }
 
   before(:all) do
     AppLogger = Logger.new(nil)
@@ -18,6 +18,7 @@ describe Index do
     end
 
     before do
+      IndexFile.base_path = './test_index'
       FileUtils.rm_rf(IndexFile.base_path)
       FileUtils.mkdir_p(IndexFile.prefixes_path)
       FileUtils.mkdir_p(IndexFile.words_path)
@@ -57,6 +58,18 @@ describe Index do
         '456',
         '123',
       ]
+    end
+  end
+
+  describe '#search' do
+    subject(:index) { Index.new }
+    let(:term) { 'our' }
+
+    it 'returns the total count of documents' do
+      IndexFile.base_path = './spec/fixtures/test_index'
+      result = index.search(term)
+      expect(result).not_to eql []
+      expect(result[0]).to include "Here is our forecast"
     end
   end
 end

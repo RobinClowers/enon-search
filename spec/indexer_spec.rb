@@ -14,6 +14,7 @@ describe Indexer do
     let(:word) { 'our' }
 
     before do
+      IndexFile.base_path = './test_index'
       Index.delete_index
       Index.create_index
     end

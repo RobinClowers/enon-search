@@ -34,7 +34,7 @@ module IndexFile
   end
 
   def self.prefixes_path
-    File.join(@base_path, 'prefixes')
+    File.join(base_path, 'prefixes')
   end
 
   def self.prefix_path(prefix)
@@ -46,7 +46,7 @@ module IndexFile
   end
 
   def self.words_path
-    File.join(@base_path, 'words')
+    File.join(base_path, 'words')
   end
 
   def self.word_path(word)
@@ -58,7 +58,7 @@ module IndexFile
   end
 
   def self.objects_path
-    File.join(@base_path, 'objects')
+    File.join(base_path, 'objects')
   end
 
   def self.object_path(hash)

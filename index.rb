@@ -12,8 +12,7 @@ require './app_logger'
 # by opening the word file based on the fragment index,
 # we can get all the hashes that contain the word
 class Index
-  def initialize(path = IndexFile.base_path)
-    @path = path
+  def initialize
     @appended_words = {}
     @appended_hashes = {}
   end
