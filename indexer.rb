@@ -4,17 +4,16 @@ require './index'
 require './indexer_options'
 
 AllowChars = /[^0-9A-Za-z\s]/
-ChunkSize = ENV.fetch('CHUNK_SIZE', 100).to_i
 
 class Indexer
+  attr_accessor :options
+
   def self.index(source_dir, max_files: :infinity)
     new(IndexerOptions.new(path: source_dir, max_files: max_files)).index
   end
 
   def initialize(options)
-    @source_dir = options.path
-    @max_files = options.max_files
-    @verbose = options.verbose
+    @options = options
     @index = Index.new
     @total_file_count = 0
     @files = []
@@ -34,7 +33,7 @@ class Indexer
     AppLogger.info "  discovered #{@files.length} files"
     start_time = Time.now
     slice = 1
-    @files.each_slice(ChunkSize) do |chunk|
+    @files.each_slice(options.chunk_size) do |chunk|
       AppLogger.info "Indexing #{chunk.length} files"
       start_time = Time.now
       chunk.each do |path|
@@ -59,10 +58,10 @@ class Indexer
   private
 
   def remaining_files(slice)
-    if ChunkSize > @files.length
+    if options.chunk_size > @files.length
       @files.length
     else
-      @files.length - slice * ChunkSize
+      @files.length - slice * options.chunk_size
     end
   end
 
@@ -73,8 +72,8 @@ class Indexer
   end
 
   def walk_directory
-    Find.find(@source_dir) do |path|
-      return if @max_files != :infinity && @files.length >= @max_files
+    Find.find(options.path) do |path|
+      return if options.max_files != :infinity && @files.length >= options.max_files
 
       name = File.basename(path)
       if name[0] == '.'
